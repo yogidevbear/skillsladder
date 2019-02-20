@@ -1,0 +1,27 @@
+{:ig/system
+ {:skillsladder.app.foo/string "Hello, app!"
+  [:edge.yada.ig/classpath-name :skillsladder.app/index] {:name "index.html"}
+  [:edge.yada.ig/resources :skillsladder.app/assets] {:path "public/"}
+  :edge.yada.ig/listener {:handler #ig/ref :edge.bidi.ig/vhost
+                          :port 3000}
+  :edge.bidi.ig/vhost [["http://localhost:3000"
+                        [""
+                         [["/" #ig/ref [:skillsladder.app/index :edge.yada.ig/classpath-name]]
+                          ["/hello" #ig/ref :skillsladder.app.foo/string]
+                          ["" #ig/ref [:skillsladder.app/assets :edge.yada.ig/resources]]]]]]
+  :edge.kick/builder
+  {:kick.builder/target #profile {:dev "target/dev"
+                                  :prod "target/prod"}
+   :kick/sass {:builds [{:id "app"
+                         :source "app.scss"
+                         :target "public/app.css"}]}
+   :kick/figwheel-main {:builds [{:id "app"
+                                  :main skillsladder.app.frontend.main
+                                  :output-to "public/frontend.js"
+                                  :output-dir "public/frontend.out"
+                                  :asset-path "/frontend.out"
+                                  :optimizations #profile {:dev :none
+                                                           :prod :advanced}}]
+                        :figwheel-config
+                        {:ring-server-options
+                         {:port 4900}}}}}}
